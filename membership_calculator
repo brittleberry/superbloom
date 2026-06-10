@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership Revenue Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+.wrap,.wrap *{box-sizing:border-box;margin:0;padding:0}
+.wrap{max-width:640px;margin:0 auto;background:#FDFAF0;font-family:'DM Sans',sans-serif;color:#091E14;padding:2rem 1rem;border-radius:16px}
+.prog-row{display:flex;gap:6px;margin-bottom:2rem}
+.pd{height:6px;flex:1;border-radius:20px;background:#E8E4D8;transition:background 0.3s}
+.pd.done{background:#D2D440}.pd.active{background:#091E14}
+.step{display:none}.step.on{display:block}
+.eyebrow{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888780;margin-bottom:0.5rem}
+.q{font-family:'Libre Baskerville',serif;font-size:24px;color:#091E14;line-height:1.3;margin-bottom:0.375rem}
+.sub{font-size:14px;color:#5F5E5A;margin-bottom:1.75rem;line-height:1.5}
+.og4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+@media(max-width:480px){.og4{grid-template-columns:1fr 1fr}}
+.oc{border:1.5px solid #D3D1C7;border-radius:10px;padding:0.75rem 0.875rem;cursor:pointer;background:#fff;transition:all 0.15s}
+.oc:hover{border-color:#D2D440}
+.oc.sel{border-color:#091E14;background:#091E14}
+.oc .ol{font-size:13px;font-weight:500;color:#091E14}
+.oc.sel .ol{color:#D2D440}
+.oc .os{font-size:11px;color:#888780;margin-top:2px}
+.oc.sel .os{color:#B4B2A9}
+.field{margin-bottom:1rem}
+.field label{font-size:12px;color:#5F5E5A;display:block;margin-bottom:5px;font-weight:500}
+.piw{display:flex;align-items:center;border:1.5px solid #D3D1C7;border-radius:8px;background:#fff;overflow:hidden;max-width:220px}
+.piw .sym{padding:0 12px;font-size:15px;color:#888780;background:#F1EFE8;align-self:stretch;display:flex;align-items:center;white-space:nowrap}
+.piw input{border:none;outline:none;padding:9px 10px;font-size:15px;color:#091E14;background:transparent;width:100%}
+.gtog{display:flex;border:1.5px solid #D3D1C7;border-radius:8px;overflow:hidden;margin-bottom:1.25rem;max-width:300px}
+.gtog button{flex:1;padding:10px 16px;font-size:13px;border:none;cursor:pointer;background:#fff;color:#5F5E5A;transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.gtog button.on{background:#091E14;color:#D2D440;font-weight:500}
+.fn{font-size:12px;color:#888780;margin-bottom:1.5rem}
+.nbtn{width:100%;padding:14px;background:#D2D440;color:#091E14;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;transition:opacity 0.15s;font-family:'DM Sans',sans-serif}
+.nbtn:hover{opacity:0.85}
+.bk{display:block;text-align:center;font-size:13px;color:#888780;margin-top:1rem;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.needed{background:#D2D440;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.25rem}
+.nn{font-size:48px;font-weight:500;color:#091E14;line-height:1;min-width:100px;text-align:center}
+.nt{font-size:13px;color:#091E14;line-height:1.6}
+.nt b{font-weight:500}
+.needed.multi{flex-direction:column;align-items:stretch;gap:0.75rem}
+.nt2{font-size:13px;color:#091E14;font-weight:600;line-height:1.5}
+.nrows{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem}
+.nrow{background:rgba(9,30,20,0.08);border-radius:8px;padding:0.5rem 0.75rem;display:flex;align-items:baseline;gap:6px}
+.nrn{font-size:24px;font-weight:600;color:#091E14;line-height:1}
+.nrl{font-size:12px;color:#091E14}
+.gbar-bg{background:#E8E4D8;border-radius:20px;height:8px;overflow:hidden;margin-bottom:4px}
+.gbar-fill{height:100%;border-radius:20px;background:#D2D440;transition:width 0.4s}
+.gbar-row{display:flex;justify-content:space-between;font-size:11px;color:#888780;margin-bottom:1.5rem}
+.nudge{background:#fff;border:1.5px solid #D2D440;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.nudge .nh{font-size:13px;font-weight:500;color:#091E14;margin-bottom:10px}
+.ni{font-size:13px;color:#5F5E5A;display:flex;align-items:flex-start;gap:8px;line-height:1.5;margin-bottom:6px}
+.ni:last-child{margin-bottom:0}
+.nidot{width:6px;height:6px;border-radius:50%;background:#D2D440;flex-shrink:0;margin-top:6px}
+.divider{border:none;border-top:1px solid #E8E4D8;margin:1.5rem 0}
+.cl{font-size:12px;font-weight:500;color:#091E14;margin-bottom:0.875rem}
+.srow{margin-bottom:1.25rem}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.shl{font-size:13px;color:#5F5E5A}
+.shv{font-size:13px;font-weight:500;color:#091E14;min-width:40px;text-align:right}
+input[type=range]{width:100%;accent-color:#D2D440;cursor:pointer}
+.rzones{display:flex;border-radius:6px;overflow:hidden;border:1px solid #D3D1C7;margin:6px 0 5px}
+.rz{flex:1;padding:5px 4px;text-align:center}
+.rzl{font-size:10px;font-weight:500}
+.rzr{font-size:9px;margin-top:1px}
+.rz.lo{background:#FCEBEB}.rz.lo .rzl{color:#A32D2D}.rz.lo .rzr{color:#F09595}
+.rz.av{background:#FAEEDA}.rz.av .rzl{color:#854F0B}.rz.av .rzr{color:#EF9F27}
+.rz.gd{background:#EAF3DE}.rz.gd .rzl{color:#3B6D11}.rz.gd .rzr{color:#97C459}
+.rz.gr{background:#E1F5EE}.rz.gr .rzl{color:#0F6E56}.rz.gr .rzr{color:#5DCAA5}
+.snote{font-size:11px;color:#888780;line-height:1.5;margin-top:4px}
+.ins{background:#091E14;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.ins .ih{font-size:13px;font-weight:500;color:#D2D440;margin-bottom:4px}
+.ins .ib{font-size:13px;color:#B4B2A9;line-height:1.6}
+.ins .ib b{color:#FDFAF0}
+.ptbl-plan{margin-bottom:1.25rem}
+.ptbl-cap{font-size:12px;font-weight:600;color:#091E14;margin-bottom:6px}
+.ptbl-cap span{font-weight:400;color:#888780}
+.ptwrap{overflow-x:auto;border:1px solid #E8E4D8;border-radius:10px}
+table.ptbl{border-collapse:collapse;width:100%;font-size:11px;min-width:320px}
+table.ptbl th,table.ptbl td{padding:5px 8px;text-align:right;white-space:nowrap}
+table.ptbl th{background:#091E14;color:#FDFAF0;font-weight:500;font-size:10px;position:sticky;top:0}
+table.ptbl th:first-child,table.ptbl td:first-child{text-align:left}
+table.ptbl tbody tr:nth-child(even){background:#F6F3EA}
+table.ptbl td.cash{font-weight:600;color:#091E14}
+table.ptbl tr.ptbl-total td{border-top:2px solid #091E14;font-weight:700;background:#FDFAF0}
+.ptbl-grand{background:#091E14;color:#FDFAF0;border-radius:10px;padding:0.875rem 1rem;margin:0 0 1.25rem}
+.ptbl-grand .g1{font-size:11px;color:#B4B2A9}
+.ptbl-grand .g2{font-size:17px;font-weight:600;color:#D2D440}
+.churn-box{background:#fff;border:1.5px solid #C098A8;border-radius:10px;padding:0.875rem 1rem;display:flex;align-items:center;gap:0.875rem}
+.churn-box .cb-icon{width:36px;height:36px;border-radius:50%;background:#C098A8;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.churn-box .cb-icon svg{display:block}
+.churn-box .cb-num{font-size:22px;font-weight:500;color:#091E14;line-height:1;margin-bottom:2px}
+.churn-box .cb-label{font-size:12px;color:#5F5E5A;line-height:1.4}
+.churn-box .cb-label b{color:#091E14;font-weight:500}
+.stepper{display:flex;align-items:center;border:1.5px solid #D3D1C7;border-radius:8px;overflow:hidden;width:fit-content}
+.stepper button{width:36px;height:36px;border:none;background:#F1EFE8;color:#091E14;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;transition:background 0.1s;flex-shrink:0}
+.stepper button:hover{background:#E8E4D8}
+.stepper input{width:54px;height:36px;border:none;border-left:1.5px solid #D3D1C7;border-right:1.5px solid #D3D1C7;text-align:center;font-size:14px;font-weight:500;color:#091E14;background:#fff;outline:none}
+.pool-toggles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem}
+.pt{border:1.5px solid #D3D1C7;border-radius:8px;padding:8px 16px;cursor:pointer;background:#fff;font-size:13px;color:#5F5E5A;transition:all 0.15s;user-select:none}
+.pt:hover{border-color:#D2D440}
+.pt.on{background:#091E14;color:#D2D440;border-color:#091E14;font-weight:500}
+.pool-card{border:1.5px solid #D3D1C7;border-radius:12px;padding:1.125rem 1.25rem;margin-bottom:12px;background:#fff}
+.pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.pc-title{font-size:14px;font-weight:500;color:#091E14}
+.pc-badge{font-size:11px;background:#F1EFE8;color:#5F5E5A;padding:3px 10px;border-radius:20px}
+.pool-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0.875rem}
+.mfl{font-size:12px;color:#5F5E5A;display:block;margin-bottom:5px;font-weight:500}
+.mfi{width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #D3D1C7;border-radius:7px;background:#fff;color:#091E14;outline:none}
+.mfi:focus{border-color:#091E14}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="prog-row" id="prog"></div>
+
+<div id="s1" class="step on">
+  <div class="eyebrow">Step 1 of 3</div>
+  <div class="q">What billing option are you starting with?</div>
+  <div class="sub">Pick the main one. You can add or mix billing types on the last screen.</div>
+  <div class="og4" id="cg">
+    <div class="oc sel" onclick="setS1('monthly')"><div class="ol">Monthly</div><div class="os">Recurring</div></div>
+    <div class="oc" onclick="setS1('annual')"><div class="ol">Annual</div><div class="os">Paid once/yr</div></div>
+    <div class="oc" onclick="setS1('3month')"><div class="ol">3-month</div><div class="os">Quarterly</div></div>
+    <div class="oc" onclick="setS1('6month')"><div class="ol">6-month</div><div class="os">Semi-annual</div></div>
+  </div>
+  <div style="margin-bottom:1.5rem">
+    <div class="oc" id="mix-oc" onclick="setS1Mix()" style="grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0.875rem 1.125rem">
+      <div style="width:28px;height:28px;border-radius:50%;background:#F1EFE8;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px">+</div>
+      <div><div class="ol" style="color:#091E14">Offer a mix of billing options</div><div class="os" style="color:#888780">Monthly, annual, 3-month, 6-month. You choose on the next screen</div></div>
+    </div>
+  </div>
+  <div id="s1-single-price" class="field">
+    <label id="s1pl">Monthly price</label>
+    <div class="piw"><div class="sym">$</div><input type="number" id="s1price" value="49" min="1"></div>
+  </div>
+  <div id="s1-mix-note" style="display:none;font-size:13px;color:#5F5E5A;background:#fff;border:1.5px solid #D2D440;border-radius:10px;padding:0.875rem 1rem;margin-bottom:1rem;line-height:1.5">
+    You can set prices for each plan on the next screen. You&#39;ll be able to toggle any combination of monthly, annual, 3-month, and 6-month billing.
+  </div>
+  <button class="nbtn" onclick="goTo(2)">Next: set your revenue goal &rarr;</button>
+</div>
+
+<div id="s2" class="step">
+  <div class="eyebrow">Step 2 of 3</div>
+  <div class="q">What's your revenue goal from this membership?</div>
+  <div class="sub">Pick a number you'd genuinely feel good about hitting.</div>
+  <div class="gtog">
+    <button class="on" id="gtm" onclick="setGP('month')">Per month</button>
+    <button id="gty" onclick="setGP('year')">Per year</button>
+  </div>
+  <div class="field">
+    <label id="glbl">Monthly revenue goal</label>
+    <div class="piw"><div class="sym">$</div><input type="number" id="goal" value="3000" min="0" oninput="updateEquiv()"></div>
+  </div>
+  <div class="fn" id="gequiv">That works out to $36,000 per year.</div>
+  <button class="nbtn" onclick="goTo(3)">See the breakdown &rarr;</button>
+  <span class="bk" onclick="goTo(1)">Back</span>
+</div>
+
+<div id="s3" class="step">
+  <div class="eyebrow">Your membership math</div>
+  <div class="needed" id="needed"></div>
+  <div id="cashtotal"></div>
+  <div id="churn-boxes" style="display:grid;gap:8px;margin-bottom:1rem"></div>
+  <div class="gbar-bg"><div class="gbar-fill" id="gbar" style="width:0%"></div></div>
+  <div class="gbar-row"><span id="gbarlbl">Progress toward goal</span><span id="gbarpct">0%</span></div>
+
+  <div class="nudge">
+    <div class="nh">Now play with it. See what changes.</div>
+    <div class="ni"><div class="nidot"></div>What happens to the member count needed if you raise or lower your price?</div>
+    <div class="ni"><div class="nidot"></div>What if your retention is closer to 70% instead of 85%?</div>
+    <div class="ni"><div class="nidot"></div>How many new members per month would it take to actually grow?</div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="cl">Your revenue goal</div>
+  <div class="gtog" style="margin-bottom:1rem">
+    <button class="on" id="gtm3" onclick="setGP3('month')">Per month</button>
+    <button id="gty3" onclick="setGP3('year')">Per year</button>
+  </div>
+  <div class="field">
+    <div class="piw"><div class="sym">$</div><input type="number" id="goal3" min="0" oninput="onGoal3()"></div>
+  </div>
+  <div class="fn" id="gequiv3" style="margin-bottom:0"></div>
+
+  <div class="divider"></div>
+  <div class="cl">Subscription options</div>
+  <div style="font-size:13px;color:#5F5E5A;margin-bottom:12px;line-height:1.5">Toggle plans on or off and mix any combination you want. Each active plan gets its own price, new member count, and retention rate.</div>
+  <div class="pool-toggles" id="pool-toggles"></div>
+  <div id="pool-cards"></div>
+
+  <div class="divider"></div>
+  <div class="ins" id="ins"></div>
+
+  <div style="margin-bottom:1.5rem">
+    <div class="cl" style="margin-bottom:0.5rem">18-month cash projection</div>
+    <div class="snote" style="font-size:11px;margin-bottom:0.875rem">Actual cash collected each month, including new signups and renewals. Month 1 is your starting point; new members begin arriving in month 2. At each renewal, members either renew (pay again) or churn. Annual and multi-month plans pay in lumps and renew on each member's own anniversary, which is why you see them land and then come up for renewal later.</div>
+    <div id="projtbl"></div>
+  </div>
+
+  <span class="bk" onclick="goTo(1)">Start over</span>
+</div>
+</div>
+
+<script>
+const DEFS={
+  monthly:{label:'Monthly',badge:'renews every month',period:1,dp:49,dr:85,rmin:60,rmax:99,rlabel:'Monthly retention rate',rnote:'Aim for 85–95%. Many digital memberships land at 60–75% in year one.'},
+  annual:{label:'Annual',badge:'renews at month 12',period:12,dp:470,dr:70,rmin:40,rmax:99,rlabel:'Annual renewal rate',rnote:'Members churn at their annual renewal date, not monthly. 60–75% is typical year one.'},
+  '3month':{label:'3-month',badge:'renews every 3 months',period:3,dp:129,dr:72,rmin:40,rmax:99,rlabel:'3-month renewal rate',rnote:'Churn happens at months 3, 6, 9, 12... 65–80% renewal rate is typical.'},
+  '6month':{label:'6-month',badge:'renews every 6 months',period:6,dp:229,dr:75,rmin:40,rmax:99,rlabel:'6-month renewal rate',rnote:'Churn happens at months 6, 12, 18... 65–80% renewal rate is typical.'}
+};
+const KEYS=['monthly','annual','3month','6month'];
+
+let S={
+  gp:'month',members:50,s1k:'monthly',
+  pools:{
+    monthly:{active:true,price:49,npm:10,ret:85,start:50},
+    annual:{active:false,price:470,npm:2,ret:70,start:0},
+    '3month':{active:false,price:129,npm:5,ret:72,start:0},
+    '6month':{active:false,price:229,npm:3,ret:75,start:0}
+  }
+};
+let cur=1;
+
+function bp(){
+  const p=document.getElementById('prog');p.innerHTML='';
+  for(let i=1;i<=3;i++){
+    const d=document.createElement('div');
+    d.className='pd'+(i<cur?' done':i===cur?' active':'');
+    p.appendChild(d);
+  }
+}
+
+function goTo(n){
+  document.getElementById('s'+cur).classList.remove('on');
+  cur=n;
+  document.getElementById('s'+cur).classList.add('on');
+  bp();
+  if(n===3){initS3();syncGoal3();recalc();}
+  if(n===2)updateEquiv();
+}
+
+function setS1Mix(){
+  S.s1k='mix';
+  KEYS.forEach((x,i)=>document.querySelectorAll('#cg .oc')[i].classList.remove('sel'));
+  document.getElementById('mix-oc').classList.add('sel');
+  // When mix-oc is selected, its inner .ol and .os need to invert colors
+  document.querySelector('#mix-oc .ol').style.color='#D2D440';
+  document.querySelector('#mix-oc .os').style.color='#B4B2A9';
+  document.querySelector('#mix-oc div:first-child').style.background='rgba(255,255,255,0.15)';
+  document.getElementById('s1-single-price').style.display='none';
+  document.getElementById('s1-mix-note').style.display='block';
+}
+function setS1(k){
+  S.s1k=k;
+  KEYS.forEach((x,i)=>document.querySelectorAll('#cg .oc')[i].classList.toggle('sel',x===k));
+  document.getElementById('s1-single-price').style.display='block';
+  document.getElementById('s1-mix-note').style.display='none';
+  const mo=document.getElementById('mix-oc');
+  if(mo){
+    mo.classList.remove('sel');
+    const ol=mo.querySelector('.ol'),os=mo.querySelector('.os'),ic=mo.querySelector('div:first-child');
+    if(ol)ol.style.color='#091E14';
+    if(os)os.style.color='#888780';
+    if(ic)ic.style.background='#F1EFE8';
+  }
+  document.getElementById('s1pl').textContent=DEFS[k].label+' price';
+  document.getElementById('s1price').value=DEFS[k].dp;
+}
+
+function setGP(p){
+  S.gp=p;
+  document.getElementById('gtm').classList.toggle('on',p==='month');
+  document.getElementById('gty').classList.toggle('on',p==='year');
+  document.getElementById('glbl').textContent=p==='month'?'Monthly revenue goal':'Annual revenue goal';
+  updateEquiv();
+}
+
+function updateEquiv(){
+  const g=parseFloat(document.getElementById('goal').value)||0;
+  document.getElementById('gequiv').textContent=S.gp==='month'
+    ?'That works out to $'+Math.round(g*12).toLocaleString()+' per year.'
+    :'That works out to $'+Math.round(g/12).toLocaleString()+' per month.';
+}
+
+// Inline goal editor on step 3 (kept in sync with the canonical #goal input)
+function updateEquiv3(){
+  const g=parseFloat(document.getElementById('goal3').value)||0;
+  document.getElementById('gequiv3').textContent=S.gp==='month'
+    ?'That works out to $'+Math.round(g*12).toLocaleString()+' per year.'
+    :'That works out to $'+Math.round(g/12).toLocaleString()+' per month.';
+}
+function syncGoal3(){
+  document.getElementById('goal3').value=document.getElementById('goal').value;
+  document.getElementById('gtm3').classList.toggle('on',S.gp==='month');
+  document.getElementById('gty3').classList.toggle('on',S.gp==='year');
+  updateEquiv3();
+}
+function setGP3(p){
+  setGP(p); // keeps S.gp and the step-2 control in sync
+  document.getElementById('gtm3').classList.toggle('on',p==='month');
+  document.getElementById('gty3').classList.toggle('on',p==='year');
+  updateEquiv3();
+  recalc();
+}
+function onGoal3(){
+  const v=Math.max(0,parseFloat(document.getElementById('goal3').value)||0);
+  document.getElementById('goal').value=v; // write to canonical input recalc reads
+  updateEquiv();
+  updateEquiv3();
+  recalc();
+}
+
+function initS3(){
+  // Reset all pools
+  KEYS.forEach(k=>{S.pools[k].active=false;S.pools[k].start=0;});
+  if(S.s1k==='mix'){
+    // Mix: all four active, split current members evenly across them
+    KEYS.forEach(k=>S.pools[k].active=true);
+    const n=KEYS.length,base=Math.floor(S.members/n),rem=S.members-(base*n);
+    KEYS.forEach((k,i)=>S.pools[k].start=base+(i<rem?1:0));
+  } else {
+    // Single plan: all current members belong to this plan
+    S.pools[S.s1k].active=true;
+    S.pools[S.s1k].start=S.members;
+    S.pools[S.s1k].price=parseFloat(document.getElementById('s1price').value)||DEFS[S.s1k].dp;
+  }
+  renderToggles();
+  renderCards();
+}
+
+function renderToggles(){
+  document.getElementById('pool-toggles').innerHTML=KEYS.map(k=>
+    `<div class="pt${S.pools[k].active?' on':''}" onclick="togglePool('${k}')">${DEFS[k].label}</div>`
+  ).join('');
+}
+
+function togglePool(k){
+  const act=KEYS.filter(x=>S.pools[x].active);
+  if(S.pools[k].active&&act.length<=1)return;
+  if(!S.pools[k].active){
+    // Activating a new plan: starts with 0 current members
+    S.pools[k].start=0;
+  }
+  S.pools[k].active=!S.pools[k].active;
+  renderToggles();
+  renderCards();
+  recalc();
+}
+
+function adjStart(k,dir){
+  S.pools[k].start=Math.max(0,S.pools[k].start+dir);
+  document.getElementById('start-'+k).value=S.pools[k].start;
+  recalc();
+}
+function adj(k,dir){
+  S.pools[k].npm=Math.max(0,S.pools[k].npm+dir);
+  document.getElementById('ni-'+k).value=S.pools[k].npm;
+  recalc();
+}
+
+function renderCards(){
+  const act=KEYS.filter(k=>S.pools[k].active);
+  document.getElementById('pool-cards').innerHTML=act.map(k=>{
+    const p=S.pools[k],d=DEFS[k];
+    const span=d.rmax-d.rmin;
+    const q1=d.rmin+Math.round(span*0.25);
+    const q2=d.rmin+Math.round(span*0.5);
+    const q3=d.rmin+Math.round(span*0.75);
+    return`<div class="pool-card">
+  <div class="pc-head">
+    <span class="pc-title">${d.label} plan</span>
+    <span class="pc-badge">${d.badge}</span>
+  </div>
+  <div class="pool-row" style="grid-template-columns:1fr 1fr 1fr">
+    <div>
+      <label class="mfl">Current members</label>
+      <div class="stepper">
+        <button onclick="adjStart('${k}',-1)">&#8722;</button>
+        <input id="start-${k}" type="number" value="${p.start}" min="0"
+          oninput="S.pools['${k}'].start=Math.max(0,parseInt(this.value)||0);recalc()">
+        <button onclick="adjStart('${k}',1)">+</button>
+      </div>
+    </div>
+    <div>
+      <label class="mfl">Price ($)</label>
+      <input class="mfi" type="number" value="${p.price}" min="1"
+        oninput="S.pools['${k}'].price=Math.max(0,parseFloat(this.value)||0);recalc()">
+    </div>
+    <div>
+      <label class="mfl">New members/mo</label>
+      <div class="stepper">
+        <button onclick="adj('${k}',-1)">&#8722;</button>
+        <input id="ni-${k}" type="number" value="${p.npm}" min="0"
+          oninput="S.pools['${k}'].npm=Math.max(0,parseInt(this.value)||0);recalc()">
+        <button onclick="adj('${k}',1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="sh" style="margin-bottom:3px">
+    <span class="shl" style="font-size:12px">${d.rlabel}</span>
+    <span class="shv" id="rv-${k}">${p.ret}%</span>
+  </div>
+  <div class="rzones">
+    <div class="rz lo"><div class="rzl">Low</div><div class="rzr">${d.rmin}&#8211;${q1}%</div></div>
+    <div class="rz av"><div class="rzl">Avg</div><div class="rzr">${q1+1}&#8211;${q2}%</div></div>
+    <div class="rz gd"><div class="rzl">Good</div><div class="rzr">${q2+1}&#8211;${q3}%</div></div>
+    <div class="rz gr"><div class="rzl">Strong</div><div class="rzr">${q3+1}&#8211;${d.rmax}%</div></div>
+  </div>
+  <input type="range" min="${d.rmin}" max="${d.rmax}" step="1" value="${p.ret}"
+    oninput="S.pools['${k}'].ret=parseInt(this.value);document.getElementById('rv-${k}').textContent=this.value+'%';recalc()">
+  <div class="snote">${d.rnote}</div>
+</div>`;
+  }).join('');
+}
+
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+
+function recalc(){
+  const act=KEYS.filter(k=>S.pools[k].active);
+  const gr=parseFloat(document.getElementById('goal').value)||0;
+  const goalAnnual=S.gp==='month'?gr*12:gr;
+
+  // Cash projection: single source of truth for all the numbers below
+  const cashData={}; act.forEach(k=>cashData[k]=buildCash(k));
+  let g12=0,g18=0;
+  for(let i=0;i<18;i++){ const s=act.reduce((a,k)=>a+cashData[k][i].cash,0); if(i<12)g12+=s; g18+=s; }
+
+  // Members needed to hit the goal, broken out by subscription type
+  renderNeeded(act,goalAnnual);
+
+  // Progress: projected 12-month cash vs the annual goal (apples to apples)
+  const ppct=goalAnnual>0?Math.min(200,g12/goalAnnual*100):0;
+  document.getElementById('gbar').style.width=Math.min(100,ppct)+'%';
+  document.getElementById('gbarlbl').textContent=goalAnnual>0?'Projected 12-mo cash vs '+fmt(goalAnnual)+'/yr goal':'Set a goal to track progress';
+  document.getElementById('gbarpct').textContent=Math.round(ppct)+'%';
+
+  // Churn boxes - one per active billing type
+  const churnPeriodLabels={monthly:'every month',annual:'every year at renewal','3month':'every 3 months at renewal','6month':'every 6 months at renewal'};
+  const churnBoxesHtml=act.map((k,i)=>{
+    const p=S.pools[k];
+    const perPool=p.start;
+    const churned=perPool-Math.round(perPool*(p.ret/100));
+    const def=DEFS[k];
+    return`<div class="churn-box">
+      <div class="cb-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 2L9 16M9 16L5 12M9 16L13 12" stroke="#FDFAF0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="cb-num">${churned.toLocaleString()}</div><div class="cb-label"><b>${def.label} plan:</b> ~${churned.toLocaleString()} member${churned!==1?'s':''} leave ${churnPeriodLabels[k]} (${p.ret}% retention on ${perPool.toLocaleString()} members)</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('churn-boxes').innerHTML=churnBoxesHtml;
+  document.getElementById('churn-boxes').style.gridTemplateColumns=act.length>1?'1fr 1fr':'1fr';
+
+  // Insight: projected 12-month cash vs annual goal
+  const surplus=g12-goalAnnual;
+  document.getElementById('ins').innerHTML = goalAnnual<=0
+    ? `<div class="ih">Set your goal</div><div class="ib">Enter a revenue goal above and you'll see whether your current plans and growth are projected to reach it.</div>`
+    : (surplus>=0
+      ? `<div class="ih">On track to clear your goal</div><div class="ib">You're projected to collect <b>${fmt(g12)}</b> over the next 12 months, about <b>${fmt(surplus)} above</b> your <b>${fmt(goalAnnual)}/yr</b> target. From here the work is keeping members, not just adding them.</div>`
+      : `<div class="ih">Closing the gap</div><div class="ib">You're projected to collect <b>${fmt(g12)}</b> over the next 12 months, about <b>${fmt(-surplus)} short</b> of your <b>${fmt(goalAnnual)}/yr</b> goal. The counts up top show what each plan needs on its own. Raising prices or retention moves this too.</div>`);
+
+  renderProjection(act,cashData,g12,g18);
+}
+
+function renderNeeded(act,goalAnnual){
+  const el=document.getElementById('needed');
+  if(!act.length){ el.className='needed'; el.innerHTML='<div class="nt">Turn on a subscription option below to see how many members it takes.</div>'; return; }
+  if(goalAnnual<=0){ el.className='needed'; el.innerHTML='<div class="nt">Set a revenue goal above to see how many members it takes to reach it.</div>'; return; }
+  const apm=k=>S.pools[k].price*(12/DEFS[k].period); // annual cash one member of this plan brings in
+  if(act.length===1){
+    const k=act[0], a=apm(k), n=a>0?Math.ceil(goalAnnual/a):0;
+    el.className='needed';
+    el.innerHTML=`<div class="nn">${n.toLocaleString()}</div><div class="nt"><b>${DEFS[k].label.toLowerCase()} members</b> needed to reach your <b>${fmt(goalAnnual)}/yr</b> goal</div>`;
+  } else {
+    const rows=act.map(k=>{const a=apm(k), n=a>0?Math.ceil(goalAnnual/a):0; return `<div class="nrow"><span class="nrn">${n.toLocaleString()}</span><span class="nrl">${DEFS[k].label.toLowerCase()} members</span></div>`;}).join('');
+    el.className='needed multi';
+    el.innerHTML=`<div class="nt2">To reach your ${fmt(goalAnnual)}/yr goal, you'd need any one of these on its own:</div><div class="nrows">${rows}</div><div class="nt" style="font-size:11px;opacity:0.85">A mix of plans lands somewhere in between.</div>`;
+  }
+}
+
+// ---- Cash projection (cohort-based) ----
+// Month 1 = baseline (current members). Current members pay at month 1 and renew every P months.
+// New members arrive months 2..18, pay on join, and renew on their own anniversary (join + P).
+// At each renewal, a fraction (retention) renews and pays; the rest churn and leave.
+function buildCash(k){
+  const p=S.pools[k], P=DEFS[k].period, r=p.ret/100, price=p.price, npm=p.npm;
+  const cohorts=[{s:1,count:p.start}];
+  for(let j=2;j<=18;j++) cohorts.push({s:j,count:npm});
+  const out=[];
+  for(let m=1;m<=18;m++){
+    let cash=0,churned=0,enrolled=0,joined=0;
+    for(const c of cohorts){
+      if(m<c.s) continue;
+      if(m===c.s){ cash+=c.count*price; if(c.s>1) joined+=c.count; }
+      else if((m-c.s)%P===0){ churned+=c.count*(1-r); c.count=c.count*r; cash+=c.count*price; }
+      enrolled+=c.count;
+    }
+    out.push({joined,churned,enrolled,cash});
+  }
+  return out;
+}
+
+function renderProjection(act,data,g12,g18){
+  const now=new Date();
+  const label=i=>new Date(now.getFullYear(),now.getMonth()+i,1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
+  if(!act.length){
+    document.getElementById('cashtotal').innerHTML='';
+    document.getElementById('projtbl').innerHTML='<div class="snote">Turn on at least one subscription option below to see the projection.</div>';
+    return;
+  }
+
+  let html='';
+  act.forEach(k=>{
+    const rows=data[k], d=DEFS[k], p=S.pools[k];
+    const cyc=d.period===1?'paid monthly':'paid every '+d.period+' months';
+    let body='';
+    let tNew=0,tCh=0,tCash=0;
+    rows.forEach((x,i)=>{
+      tNew+=x.joined; tCh+=x.churned; tCash+=x.cash;
+      body+=`<tr><td>${label(i+1)}</td><td>${Math.round(x.joined).toLocaleString()}</td><td>${Math.round(x.churned).toLocaleString()}</td><td>${Math.round(x.enrolled).toLocaleString()}</td><td class="cash">${fmt(x.cash)}</td></tr>`;
+    });
+    body+=`<tr class="ptbl-total"><td>18-mo</td><td>${Math.round(tNew).toLocaleString()}</td><td>${Math.round(tCh).toLocaleString()}</td><td>${Math.round(rows[17].enrolled).toLocaleString()}</td><td class="cash">${fmt(tCash)}</td></tr>`;
+    html+=`<div class="ptbl-plan">
+      <div class="ptbl-cap">${d.label} plan <span>($${Math.round(p.price).toLocaleString()}, ${cyc})</span></div>
+      <div class="ptwrap"><table class="ptbl"><thead><tr><th>Month</th><th>New</th><th>Churned</th><th>Enrolled</th><th>Cash</th></tr></thead><tbody>${body}</tbody></table></div>
+    </div>`;
+  });
+
+  document.getElementById('cashtotal').innerHTML=`<div class="ptbl-grand"><div class="g1">Projected cash collected, all plans</div><div class="g2">${fmt(g12)} <span style="font-size:12px;color:#B4B2A9;font-weight:400">over 12 months</span> &nbsp; ${fmt(g18)} <span style="font-size:12px;color:#B4B2A9;font-weight:400">over 18 months</span></div></div>`;
+  document.getElementById('projtbl').innerHTML=html;
+}
+
+bp();
+updateEquiv();
+
+// Tell a parent page (when embedded in an iframe) how tall to make this frame.
+(function(){
+  function postH(){
+    try{ parent.postMessage({sbCalcHeight: Math.ceil(document.documentElement.scrollHeight)}, '*'); }catch(e){}
+  }
+  window.addEventListener('load', postH);
+  window.addEventListener('resize', postH);
+  if(window.MutationObserver){ new MutationObserver(postH).observe(document.body, {subtree:true, childList:true, attributes:true, characterData:true}); }
+  var n=0, t=setInterval(function(){ postH(); if(++n>25) clearInterval(t); }, 250);
+})();
+</script>
+</body>
+</html>
