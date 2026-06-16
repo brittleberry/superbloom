@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Which model fits how you actually work?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --lime:#D2D440;
+    --forest:#091E14;
+    --cream:#FDFAF0;
+    --mauve:#C098A8;
+    --mauve-deep:#8E5F72;
+    --forest-soft:rgba(9,30,20,0.08);
+    --forest-line:rgba(9,30,20,0.14);
+    --serif:"Libre Baskerville", Georgia, serif;
+    --sans:"DM Sans", system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    color:var(--forest);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:42px 18px 56px;
+    background:
+      radial-gradient(58% 48% at 14% 8%, rgba(210,212,64,0.30), transparent 70%),
+      radial-gradient(52% 44% at 92% 16%, rgba(192,152,168,0.32), transparent 72%),
+      radial-gradient(50% 50% at 84% 96%, rgba(210,212,64,0.18), transparent 72%),
+      radial-gradient(46% 46% at 6% 92%, rgba(192,152,168,0.24), transparent 72%),
+      var(--cream);
+    background-attachment:fixed;
+  }
+  .wrap{
+    position:relative;
+    max-width:580px;
+    margin:0 auto;
+    background:#FFFEFB;
+    border:1px solid rgba(9,30,20,0.06);
+    border-radius:28px;
+    padding:38px 36px 42px;
+    box-shadow:0 28px 70px -24px rgba(9,30,20,0.30), 0 6px 16px -6px rgba(9,30,20,0.08);
+    animation:rise .5s cubic-bezier(.22,1,.36,1);
+  }
+  .wrap::before{
+    content:"";position:absolute;top:0;left:36px;right:36px;height:4px;border-radius:0 0 4px 4px;
+    background:linear-gradient(90deg, var(--lime), var(--mauve));
+    opacity:.9;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  @media (max-width:560px){
+    body{padding:20px 12px 32px;}
+    .wrap{border-radius:22px;padding:28px 22px 32px;}
+    .wrap::before{left:22px;right:22px;}
+    h1{font-size:32px;}
+    .qtext{font-size:21px;}
+    .match{font-size:25px;}
+  }
+  @media (prefers-reduced-motion: reduce){ .wrap{animation:none;} }
+
+  /* progress */
+  .progress{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:36px;
+  }
+  .progress .dots{display:flex;gap:7px;}
+  .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--forest-line);
+    transition:background .25s ease, transform .25s ease;
+  }
+  .dot.done{background:var(--mauve);}
+  .dot.current{background:var(--forest);transform:scale(1.25);}
+  .progress .label{
+    font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+    color:rgba(9,30,20,.55);font-weight:600;margin-left:auto;
+  }
+
+  /* intro */
+  .eyebrow{
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:600;color:var(--mauve-deep);margin-bottom:18px;
+  }
+  h1{
+    font-family:var(--serif);font-weight:700;
+    font-size:42px;line-height:1.15;margin:0 0 18px;
+  }
+  .lede{font-size:17px;color:rgba(9,30,20,.78);margin:0 0 32px;max-width:30em;}
+
+  /* question */
+  .qnum{
+    font-family:var(--serif);font-style:italic;
+    font-size:15px;color:var(--mauve-deep);margin-bottom:10px;
+  }
+  .qtext{
+    font-family:var(--serif);font-weight:700;
+    font-size:23px;line-height:1.32;margin:0 0 26px;
+  }
+  .options{display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    text-align:left;width:100%;cursor:pointer;
+    background:#FBF7EC;border:1.5px solid rgba(9,30,20,0.10);border-radius:14px;
+    padding:18px 20px;font-family:var(--sans);font-size:16px;color:var(--forest);
+    line-height:1.45;transition:border-color .15s ease, background .15s ease, transform .12s ease, box-shadow .15s ease;
+  }
+  .opt:hover{border-color:var(--forest);background:#fff;box-shadow:0 8px 20px -12px rgba(9,30,20,0.35);transform:translateY(-1px);}
+  .opt:active{transform:scale(.992);}
+  .opt:focus-visible{outline:3px solid var(--lime);outline-offset:2px;}
+  .opt.sel{
+    border-color:var(--forest);
+    background:linear-gradient(0deg, rgba(210,212,64,.22), rgba(210,212,64,.22)), #fff;
+    box-shadow:0 8px 22px -12px rgba(9,30,20,0.30);
+  }
+
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:30px;}
+  .back{
+    background:none;border:none;cursor:pointer;font-family:var(--sans);
+    font-size:15px;color:rgba(9,30,20,.55);font-weight:500;padding:8px 4px;
+  }
+  .back:hover{color:var(--forest);}
+  .back[hidden]{visibility:hidden;}
+  .btn{
+    background:var(--forest);color:var(--cream);border:none;cursor:pointer;
+    font-family:var(--sans);font-weight:600;font-size:16px;
+    padding:14px 30px;border-radius:999px;transition:background .15s ease, opacity .15s ease;
+  }
+  .btn:hover{background:#0d2c1d;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn:focus-visible{outline:3px solid var(--lime);outline-offset:2px;}
+  #start{
+    background:#092013;
+    padding:17px 32px;
+    font-size:17px;
+    width:100%;
+  }
+  #start:hover{background:#000;}
+
+  /* result */
+  .result-eyebrow{
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:600;color:var(--mauve-deep);margin-bottom:14px;
+  }
+  .match{
+    font-family:var(--serif);font-weight:700;font-size:30px;line-height:1.22;margin:0 0 10px;
+  }
+  .runner-up{
+    font-size:14px;font-weight:600;color:var(--mauve-deep);
+    letter-spacing:.01em;margin:0 0 20px;
+  }
+  .match-body{font-size:17px;color:rgba(9,30,20,.8);margin:0 0 30px;max-width:32em;}
+  .secondary{
+    background:#FBF7EC;border:1px solid rgba(9,30,20,0.08);border-left:5px solid var(--lime);
+    border-radius:14px;padding:20px 22px;margin:0 0 36px;
+  }
+  .secondary .tag{
+    font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    color:var(--mauve-deep);margin-bottom:8px;
+  }
+  .secondary p{margin:0;font-size:15.5px;color:rgba(9,30,20,.82);line-height:1.5;}
+
+  .ranking-title{
+    font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+    color:rgba(9,30,20,.55);margin:0 0 16px;
+  }
+  .bar-row{margin-bottom:16px;}
+  .bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .bar-name{font-weight:600;font-size:15px;}
+  .bar-name .lead{color:var(--mauve-deep);font-style:italic;font-family:var(--serif);font-weight:400;font-size:13px;margin-left:8px;}
+  .bar-pct{font-size:13px;color:rgba(9,30,20,.55);font-variant-numeric:tabular-nums;}
+  .bar-track{height:10px;background:var(--forest-soft);border-radius:999px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;width:0;transition:width .7s cubic-bezier(.22,1,.36,1);}
+  .bar-fill.top{background:var(--lime);}
+  .bar-fill.rest{background:var(--mauve);}
+
+  .restart{
+    margin-top:34px;background:none;border:1.5px solid var(--forest-line);
+    color:var(--forest);border-radius:999px;padding:11px 24px;cursor:pointer;
+    font-family:var(--sans);font-weight:600;font-size:15px;
+  }
+  .restart:hover{border-color:var(--forest);}
+
+  .screen[hidden]{display:none;}
+  .fade{animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){
+    .fade{animation:none;}
+    .bar-fill{transition:none;}
+    .dot{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section class="screen" id="intro">
+    <div class="eyebrow">Online Business Match Finder</div>
+    <h1>Which online business model fits you best?</h1>
+    <p class="lede">In less than 2 minutes let's find an online business model that fits what you love to do, helps the people you want to serve, and fits your real life. You've spent your career serving others, and now it's time to find something that serves you too.</p>
+    <button class="btn" id="start">Find My Match!</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="quiz" hidden>
+    <div class="progress">
+      <div class="dots" id="dots"></div>
+      <div class="label" id="counter"></div>
+    </div>
+    <div class="fade" id="qcard"></div>
+    <div class="nav">
+      <button class="back" id="back">Back</button>
+      <button class="btn" id="next" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="result" hidden>
+    <div class="result-eyebrow">Your model match</div>
+    <h2 class="match" id="matchTitle"></h2>
+    <p class="runner-up" id="runnerUp"></p>
+    <p class="match-body" id="matchBody"></p>
+    <div class="secondary">
+      <div class="tag">Here's the thing</div>
+      <p id="secondaryText"></p>
+    </div>
+    <p class="ranking-title">How all four ranked for you</p>
+    <div id="ranking"></div>
+    <button class="restart" id="restart">Retake the quiz</button>
+  </section>
+
+</div>
+
+<script>
+/* ----------------------------------------------------------
+   SCORING MAP  (rebalanced)
+   C = Coaching | M = Membership | Co = Course | D = Digital
+   Edit point values here to retune. Each option lists the
+   models it awards and how many points.
+---------------------------------------------------------- */
+const QUESTIONS = [
+  {
+    q: "Think about your career so far as a clinician. What has given you the most joy, the thing you felt most energized after?",
+    options: [
+      { t: "Working 1:1 with someone over time, watching them progress.", s:{C:2} },
+      { t: "A short, deep intensive where I go all in, then send them off with everything they need to succeed on their own.", s:{Co:2, C:1} },
+      { t: "Bringing people together in an ongoing group, where they learn alongside each other and keep showing up.", s:{M:2} },
+      { t: "Creating and designing resources, visuals, and materials that help people understand things on their own.", s:{D:2} },
+    ],
+  },
+  {
+    q: "When it comes to the people you work with, what kind of relationship do you thrive in most?",
+    options: [
+      { t: "A short, focused engagement. We work intensively, then they are on their way.", s:{Co:2, C:1} },
+      { t: "An ongoing relationship where I check in periodically, but they are mostly self-directing.", s:{M:2} },
+      { t: "A deep, ongoing relationship where I am closely involved in their progress.", s:{C:2} },
+      { t: "Minimal direct involvement. I create the thing, they use it on their own.", s:{D:2} },
+    ],
+  },
+  {
+    q: "When you imagine your offer up and running, where do you want to spend most of your time?",
+    options: [
+      { t: "Delivering. I want to be in the work with people as much as possible.", s:{C:2, M:1} },
+      { t: "Mostly building, with some delivery. I love creating and want that to be the bulk of my work.", s:{Co:2} },
+      { t: "A pretty even mix of building and delivering.", s:{D:2} },
+      { t: "A big build upfront, then showing up regularly for a group.", s:{M:2, Co:1} },
+    ],
+  },
+  {
+    q: "In your clinical experience, what is most missing or underserved for the people you work with?",
+    options: [
+      { t: "Personalized support. Most people need someone dedicated to their specific situation.", s:{C:2} },
+      { t: "A structured, evidence-based framework they can follow on their own. Most people just need a clear roadmap.", s:{Co:2} },
+      { t: "Ongoing support and connection with others working toward the same thing.", s:{M:2} },
+      { t: "Practical tools and resources they can actually use.", s:{D:2} },
+    ],
+  },
+  {
+    q: "How would you describe your schedule and capacity, week to week?",
+    options: [
+      { t: "Pretty unpredictable. I need something that flexes around my life without falling apart.", s:{D:2} },
+      { t: "Consistent but limited. I have set windows I can protect, but not a lot of them.", s:{Co:2, M:1} },
+      { t: "Consistent, with dedicated blocks. I can reliably show up on a recurring schedule.", s:{M:2} },
+      { t: "Flexible and available. I can build something that needs regular live presence.", s:{C:2, M:1} },
+    ],
+  },
+  {
+    q: "What would drain you fastest in your online business?",
+    options: [
+      { t: "Back-to-back live sessions with no breathing room.", s:{D:2, Co:1} },
+      { t: "Having to constantly create new material with no finish line in sight.", s:{C:2, D:1} },
+      { t: "Answering the same questions over and over again.", s:{Co:2, D:1} },
+      { t: "Working in isolation, with minimal human connection.", s:{M:2, C:1} },
+    ],
+  },
+];
+
+const RESULTS = {
+  C: {
+    title: "Your strongest fit: 1:1 or small group coaching.",
+    body: "You're at your best in the room with someone, watching them change over time. This is where you can charge higher rates and get deeper results for people, by repurposing your expertise.",
+    loop: "I know you're probably worried about hitting a ceiling with a 1:1 model, but I promise you that fear you have... was never about the 1:1 work itself. It was about limited access to care, the cap on hours spent and therefore income earned, and (really...) the amount of time & energy outside of those 1:1 sessions you'd feel obligated to give in order to justify the amount you feel you should be paid. Well... there's solutions around ALL of those issues. So if you love 1:1 work jump into your email to start learning HOW you can make a 1:1 model more sustainable for you.",
+  },
+  M: {
+    title: "Your strongest fit: a community membership.",
+    body: "You love people moving forward together, with you as the steady presence holding the space. It's also the one model that builds recurring, predictable income while the community carries some of the load.",
+    loop: "Memberships get sold as the dream, and honestly? For the members, they often are. They make your care more accessible and they can be genuinely lifechanging. But for the clinician, a membership can become highly unsustainable if it isn't designed well from day one. The line between steady recurring revenue and a content hamster wheel you can't escape comes down to decisions you make BEFORE you ever launch. So I put a deep dive in your inbox on how to keep the recurring revenue actually recurring... without ending up on that treadmill.",
+  },
+  Co: {
+    title: "Your strongest fit: a course, live cohort or evergreen.",
+    body: "You take something complex and make it click, then hand people a path they can walk on their own. It's also pure leverage: you build it once and it can reach endless amounts of people, giving them the knowledge, tools, and resources they need.",
+    loop: "A course is just packaging up everything you know, right? Well... not quite. A course that actually works isn't a lecture. It's what takes someone from where they are to where they want to go, and information and transformation are NOT the same thing. So if you want to truly change people's lives (or mentor other clinicians at a higher level), head to your email and do the deep dive on courses... it even covers how to get CEUs attached to what you build.",
+  },
+  D: {
+    title: "Your strongest fit: a digital product.",
+    body: "You light up making things people use on their own, without you in the room for every minute. It's also the most forgiving when life is unpredictable. You don't have to show up live, you can build and sell inside the margins of your life.",
+    loop: "Build it once then it sells itself forever, right? Ok, awesome...who is doing all that selling? AND just how many of those digital products do you need to sell to make a livable income? Well I sent a little something to your inbox that will open your eyes to the reality of this online business model, and key starter strategies that will help make this model more sustainable for you.",
+  },
+};
+
+const NAMES = { C:"Coaching", M:"Membership", Co:"Course", D:"Digital product" };
+const ORDER = ["C","M","Co","D"]; // stable order for final tie resolution
+
+/* ---------------- state ---------------- */
+let current = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const el = id => document.getElementById(id);
+const intro = el("intro"), quiz = el("quiz"), result = el("result");
+
+el("start").onclick = () => { show(quiz); render(); };
+el("restart").onclick = () => {
+  current = 0; answers.fill(null);
+  result.hidden = true; show(intro);
+};
+el("next").onclick = () => {
+  if (answers[current] === null) return;
+  if (current < QUESTIONS.length - 1) { current++; render(); }
+  else finish();
+};
+el("back").onclick = () => { if (current > 0) { current--; render(); } };
+
+function show(node){
+  [intro, quiz, result].forEach(s => s.hidden = (s !== node));
+  node.classList.remove("fade"); void node.offsetWidth; node.classList.add("fade");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function render(){
+  const Q = QUESTIONS[current];
+  // progress
+  const dots = QUESTIONS.map((_,i)=>{
+    const cls = i < current ? "done" : (i === current ? "current" : "");
+    return `<span class="dot ${cls}"></span>`;
+  }).join("");
+  el("dots").innerHTML = dots;
+  el("counter").textContent = `${current+1} of ${QUESTIONS.length}`;
+  // card
+  const opts = Q.options.map((o,i)=>{
+    const sel = answers[current] === i ? "sel" : "";
+    return `<button class="opt ${sel}" data-i="${i}">${o.t}</button>`;
+  }).join("");
+  el("qcard").innerHTML =
+    `<div class="qnum">Question ${current+1}</div>
+     <h2 class="qtext">${Q.q}</h2>
+     <div class="options">${opts}</div>`;
+  el("qcard").classList.remove("fade"); void el("qcard").offsetWidth; el("qcard").classList.add("fade");
+
+  el("qcard").querySelectorAll(".opt").forEach(b=>{
+    b.onclick = () => {
+      answers[current] = parseInt(b.dataset.i,10);
+      el("qcard").querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
+      b.classList.add("sel");
+      el("next").disabled = false;
+    };
+  });
+
+  el("back").hidden = current === 0;
+  el("next").disabled = answers[current] === null;
+  el("next").textContent = current === QUESTIONS.length - 1 ? "See my match" : "Next";
+}
+
+/* ---------------- scoring ---------------- */
+function tally(){
+  const total = {C:0,M:0,Co:0,D:0};
+  const q6 = {C:0,M:0,Co:0,D:0};
+  answers.forEach((choice, qi)=>{
+    const s = QUESTIONS[qi].options[choice].s;
+    for (const k in s){
+      total[k] += s[k];
+      if (qi === QUESTIONS.length - 1) q6[k] += s[k];
+    }
+  });
+  return { total, q6 };
+}
+
+function decideWinner(total, q6){
+  const max = Math.max(...ORDER.map(m=>total[m]));
+  let tied = ORDER.filter(m => total[m] === max);
+  if (tied.length === 1) return tied[0];
+  // exact tie at the top: Q6 is the decider
+  const q6max = Math.max(...tied.map(m=>q6[m]));
+  tied = tied.filter(m => q6[m] === q6max);
+  // still tied: fall back to stable order
+  return tied[0];
+}
+
+function finish(){
+  const { total, q6 } = tally();
+  const winner = decideWinner(total, q6);
+  const R = RESULTS[winner];
+
+  el("matchTitle").textContent = R.title;
+  el("matchBody").textContent = R.body;
+  el("secondaryText").textContent = R.loop;
+
+  // runner-up: highest-scoring model that isn't the winner
+  const runnerUp = ORDER.filter(m => m !== winner)
+    .sort((a,b) => total[b] - total[a])[0];
+  el("runnerUp").textContent = "Runner-up: " + NAMES[runnerUp];
+
+  // ranked, normalized so bars are comparable
+  const sum = ORDER.reduce((a,m)=>a+total[m],0) || 1;
+  const ranked = ORDER
+    .map(m => ({ m, pct: Math.round((total[m]/sum)*100) }))
+    .sort((a,b)=> b.pct - a.pct || ORDER.indexOf(a.m) - ORDER.indexOf(b.m));
+
+  el("ranking").innerHTML = ranked.map((r,i)=>{
+    const top = r.m === winner;
+    const leadTag = top ? `<span class="lead">your match</span>` : "";
+    return `<div class="bar-row">
+      <div class="bar-head">
+        <span class="bar-name">${NAMES[r.m]}${leadTag}</span>
+        <span class="bar-pct">${r.pct}%</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill ${top?'top':'rest'}" data-w="${r.pct}"></div></div>
+    </div>`;
+  }).join("");
+
+  show(result);
+  // animate bars after paint
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    el("ranking").querySelectorAll(".bar-fill").forEach(f=>{ f.style.width = f.dataset.w + "%"; });
+  }));
+}
+</script>
+</body>
+</html>
